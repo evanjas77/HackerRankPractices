@@ -25,7 +25,6 @@ Sample Output
  */
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -40,59 +39,56 @@ public class NonDivisibleSubset {
 			a[a_i] = in.nextInt();
 		}
 
-		int maxSubsetSize = findLargestNonDivisibleSubset(k, a);
+		int maxSubsetSize = findLargestNonDivisibleSubset(a, k);
 
 		System.out.println(maxSubsetSize);
 	}
 
-	private static int findLargestNonDivisibleSubset(int k, int[] a) {
-		Set<Set<Integer>> subSets = getAllSubsets(a);
+	private static int findLargestNonDivisibleSubset(int[] aSet, int k) {
 
 		int maxSubsetSize = 0;
-		Iterator<Set<Integer>> subSetsItr = subSets.iterator();
-		while (subSetsItr.hasNext()) {
-			Set<Integer> subSet = subSetsItr.next();
-			if ((subSet.size() > 2) && (subSet.size() > maxSubsetSize)) {
-				boolean nonDivisibleSubset = true;
-				Integer[] subSetArr = subSet.toArray(new Integer[subSet.size()]);
-				for (int i = 0; i < subSetArr.length; i++) {
-					for (int j = i + 1; j < subSetArr.length; j++) {
-						if ((subSetArr[i] + subSetArr[j]) % k == 0) {
-							nonDivisibleSubset = false;
-						}
-					}
-				}
-
-				if (nonDivisibleSubset) {
-					maxSubsetSize = subSet.size();
-				}
-			}
-		}
-		return maxSubsetSize;
-	}
-
-	private static Set<Set<Integer>> getAllSubsets(int[] aSet) {
-
 		int noOfSubsets = 1 << aSet.length;
-		Set<Set<Integer>> superSet = new HashSet<Set<Integer>>();
 
-		for (int i = 0; i < noOfSubsets; i++)
+		for (int i = noOfSubsets - 1; i >= 0; i--)
 
 		{
 			int mask = 1;
 			Set<Integer> iSet = new HashSet<Integer>();
 
-			for (int k = 0; k < aSet.length; k++) {
+			for (int m = 0; m < aSet.length; m++) {
 				if ((i & mask) != 0) {
-					iSet.add(aSet[k]);
+					iSet.add(aSet[m]);
 				}
 				mask = mask << 1;
 			}
 
-			superSet.add(iSet);
+			int subsetSize = iSet.size();
+			if (subsetSize > maxSubsetSize) {
+				if (isNonDivisibleSubSet(k, iSet)) {
+					maxSubsetSize = subsetSize;
+					break;
+				}
+			}
 		}
 
-		return superSet;
+		return maxSubsetSize;
+	}
+
+	private static boolean isNonDivisibleSubSet(int k, Set<Integer> iSet) {
+		boolean nonDivisibleSubset = true;
+		Integer[] subSetArr = iSet.toArray(new Integer[iSet.size()]);
+		for (int idx = 0; idx < subSetArr.length; idx++) {
+			for (int j = idx + 1; j < subSetArr.length; j++) {
+				if ((subSetArr[idx] + subSetArr[j]) % k == 0) {
+					nonDivisibleSubset = false;
+					break;
+				}
+			}
+			if (!nonDivisibleSubset) {
+				break;
+			}
+		}
+		return nonDivisibleSubset;
 	}
 
 }
